@@ -6,8 +6,10 @@ def create_app():
 
     # Registrar los blueprints
     from .api import api
+    from .vistas import vistas
 
     app.register_blueprint(api, url_prefix="/")
+    app.register_blueprint(vistas, url_prefix="/")
 
     @app.route("/")
     def saludar():
