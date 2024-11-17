@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from datetime import datetime, timedelta
+from crud import insertar_registro, recuperar_registros
 
 api = Blueprint("api", __name__)
 
@@ -51,8 +52,7 @@ def registrar_asistencia():
 
     if hora_valida:
         # Escribir el registro en la BD
-
-        
+        # insertar_registro(matricula, materia_asistencia, hora_actual.strftime("%H:%M"))        
 
         # Regresar un JSON que indique que la asistencia ha sido registrada
         return (
