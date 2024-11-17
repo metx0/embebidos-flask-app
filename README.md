@@ -22,6 +22,16 @@ pip install -r requirements.txt
 ```
 Esto instalará todas las dependencias listadas en el archivo requirements.txt
 
+### Creación del archivo .env 
+Para poder hacer la conexión con la base de datos MySQL necesitamos la contraseña. La contraseña la guardaremos como una variable de entorno.
+
+Estando en el directorio raíz del proyecto, crea un archivo llamado `.env`. En él pondrás lo siguiente:
+```
+MYSQL_PASSWORD = tu_contraseña_del_usuario_root
+```
+
+Reemplaza el valor por la contraseña del usuario root de tu servidor MySQL local. 
+
 A este punto, el proyecto debería funcionar. 
 
 
