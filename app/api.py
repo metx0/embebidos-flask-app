@@ -51,6 +51,9 @@ def registrar_asistencia():
 
     if hora_valida:
         # Escribir el registro en la BD
+
+        
+
         # Regresar un JSON que indique que la asistencia ha sido registrada
         return (
             {
