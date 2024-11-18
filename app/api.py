@@ -1,10 +1,12 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
 from datetime import datetime, timedelta
-from crud import insertar_registro, recuperar_registros
+from .crud import insertar_registro, recuperar_registros
 
 api = Blueprint("api", __name__)
 
-horario = {"concurrencia": "11:00", "sistema embebidos": "13:00"}
+# El valor de cada materia es una lista que representa las distintas horas de inicio en
+# distintos días
+horario = {"sistemas embebidos": ["19:00", "13:00"]}
 
 minutos_tolerancia = 15
 
@@ -19,7 +21,7 @@ def registrar_asistencia():
     data = request.get_json()
     matricula = data.get("matricula")
 
-    # El cliente no envió una petición correcta
+    # El cliente no envío la clave matrícula en la petición
     if not matricula:
         # Devuelve un código 400 y un mensaje de error en un JSON
         return ({"error": "La matrícula es obligatoria"}, 400)
@@ -35,24 +37,29 @@ def registrar_asistencia():
     # La materia a la que está ingresando el alumno
     materia_asistencia = ""
 
-    for materia, hora_entrada in horario.items():
-        hora_entrada_obj = datetime.strptime(hora_entrada, "%H:%M").time()
+    # Encontramos una materia que corresponda a la hora a la que se realiza la petición
+    for materia, horas in horario.items():
+        # Se ejecuta por cada hora de entrada que tenga (cantidad de días que toca a la semana)
+        for hora_entrada in horas:
+            hora_entrada_obj = datetime.strptime(hora_entrada, "%H:%M").time()
 
-        # Por ejemplo, para Concurrencia la hora límite sería 11:15
-        hora_limite = (
-            datetime.combine(datetime.today(), hora_entrada_obj)
-            + timedelta(minutes=minutos_tolerancia)
-        ).time()
+            # Por ejemplo, para Concurrencia la hora límite sería 11:15
+            hora_limite = (
+                datetime.combine(datetime.today(), hora_entrada_obj)
+                + timedelta(minutes=minutos_tolerancia)
+            ).time()
 
-        if hora_actual >= hora_entrada_obj and hora_actual <= hora_limite:
-            hora_valida = True
-            materia_asistencia = materia
-            print("La hora actual está dentro del rango permitido")
-            break
+            if hora_actual >= hora_entrada_obj and hora_actual <= hora_limite:
+                hora_valida = True
+                materia_asistencia = materia
+                print("La hora actual está dentro del rango permitido")
+                break
 
     if hora_valida:
+        # Obtener la fecha actual en formato de "YYYY-MM-DD HH-MM-SS"
+        fecha_actual = datetime.now().replace(microsecond=0)
         # Escribir el registro en la BD
-        # insertar_registro(matricula, materia_asistencia, hora_actual.strftime("%H:%M"))        
+        insertar_registro(matricula, materia_asistencia, fecha_actual)
 
         # Regresar un JSON que indique que la asistencia ha sido registrada
         return (
@@ -77,4 +84,11 @@ def registrar_asistencia():
 def mostrar_registros():
     """
     Devuelve todos los registros de la tabla 'asistencias' en un JSON
+    Lo que devuelve como tal es una lista, donde cada elemento es un objeto
+    que representa cada registro
     """
+
+    # Test provisional: regresar los registros de la tabla materias de una BD local
+    registros = recuperar_registros()
+
+    return jsonify(registros)

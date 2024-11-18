@@ -9,8 +9,6 @@ de las asistencias
 Proporciona los métodos de inserción y lectura de la tabla 
 """
 
-# TODO: cambiar las queries por las que se usarán en el esquema real
-
 
 def recuperar_contrasena_mysql() -> str:
     # El archivo .env se encuentra en el directorio raíz
@@ -20,23 +18,19 @@ def recuperar_contrasena_mysql() -> str:
     return mysql_contrasena
 
 
-def insertar_registro(id, descripcion, semestre, creditos) -> None:
-    query = "INSERT INTO materias VALUES (%s, %s, %s, %s)"
-    valores = (id, descripcion, semestre, creditos)
+# La tabla Asistencias necesita la matrícula, la materia, y la fecha (timestamp)
+def insertar_registro(matricula: int, materia: str, fecha) -> None:
+    query = "INSERT INTO asistencias (matricula, materia, fecha) VALUES (%s, %s, %s)"
+    valores = (matricula, materia, fecha)
     contrasena = recuperar_contrasena_mysql()
 
     try:
         with connector.connect(
-            host="localhost", user="root", password=contrasena, database="db_escuela"
+            host="localhost", user="root", password=contrasena, database="db_its"
         ) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(query, valores)
                 connection.commit()
-
-                registros = cursor.fetchall()
-
-                for fila in registros:
-                    print(fila)
     except connector.Error as e:
         print(e)
 
@@ -46,22 +40,42 @@ def recuperar_registros() -> list:
 
     try:
         with connector.connect(
-            host="localhost", user="root", password=contrasena, database="db_escuela"
+            host="localhost", user="root", password=contrasena, database="db_its"
         ) as connection:
             with connection.cursor() as cursor:
-                query = "SELECT * FROM materias"
+                query = "SELECT * FROM asistencias"
                 cursor.execute(query)
 
+                # Los nombres de las columnas de la tabla
+                columnas = [desc[0] for desc in cursor.description]
                 registros = cursor.fetchall()
 
-                for fila in registros:
-                    print(fila)
+                # Crear una lista de diccionarios que representa a todos los registros
+                resultado = []
 
-                return registros
+                for fila in registros:
+                    dicc = {}
+
+                    for indice, nombre_columna in enumerate(columnas):
+                        # MySQL nos devuelve la fecha como un objeto datetime, así que tenemos que pasarlo a string
+                        if nombre_columna == "fecha":
+                            fecha_obj = fila[indice]
+                            dicc[nombre_columna] = fecha_obj.strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        else:
+                            dicc[nombre_columna] = fila[indice]
+
+                    resultado.append(dicc)
+
+                return resultado
     except connector.Error as e:
         print(e)
 
 
 if __name__ == "__main__":
-    recuperar_registros()
-    # insertar_registro(124, "Programación web", 6, 4)
+    registros = recuperar_registros()
+    for registro in registros:
+        print(registro)
+        
+    # insertar_registro(70690, "sistemas embebidos", "2024-11-16 14:30:00")
