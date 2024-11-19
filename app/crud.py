@@ -43,7 +43,17 @@ def recuperar_registros() -> list:
             host="localhost", user="root", password=contrasena, database="db_its"
         ) as connection:
             with connection.cursor() as cursor:
-                query = "SELECT * FROM asistencias"
+                # Necesitamos saber el nombre del alumno al que corresponde la matrícula
+                query = """
+                    SELECT id_asistencia, 
+                        a.matricula, 
+                        materia, 
+                        fecha, 
+                        CONCAT(al.nombre, ' ', al.apellido) AS nombre_completo 
+                    FROM asistencias a
+                    JOIN alumnos al ON a.matricula = al.matricula 
+                    """
+                
                 cursor.execute(query)
 
                 # Los nombres de las columnas de la tabla
@@ -77,5 +87,5 @@ if __name__ == "__main__":
     registros = recuperar_registros()
     for registro in registros:
         print(registro)
-        
+
     # insertar_registro(70690, "sistemas embebidos", "2024-11-16 14:30:00")
