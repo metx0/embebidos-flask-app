@@ -88,7 +88,6 @@ def mostrar_registros():
     que representa cada registro
     """
 
-    # Test provisional: regresar los registros de la tabla materias de una BD local
     registros = recuperar_registros()
 
     return jsonify(registros)
