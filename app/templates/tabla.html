@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Tabla de asistencia</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h1>Registro de asistencias</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id asistencia</th>
+                    <th>Matrícula</th>
+                    <th>Nombre</th>
+                    <th>Materia</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Crear una fila para cada registro de asistencia -->
+                {% for asistencia in asistencias %}
+                    <tr>
+                        <td>{{ asistencia["id_asistencia"] }}</td>
+                        <td>{{ asistencia["matricula"] }} </td>
+                        <td>{{ asistencia["nombre_completo"] }} </td>
+                        <td>{{ asistencia["materia"] }} </td>
+                        <td>{{ asistencia["fecha"] }} </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

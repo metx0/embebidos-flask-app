@@ -11,7 +11,7 @@ def create_app():
     app.register_blueprint(api, url_prefix="/")
     app.register_blueprint(vistas, url_prefix="/")
 
-    @app.route("/")
+    @app.route("/bienvenida")
     def saludar():
         return "Bienvenido al servidor"
 

@@ -1,23 +1,15 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, render_template
+from .crud import recuperar_registros
 
 vistas = Blueprint("vistas", __name__)
 
-""" 
-Los datos se deben devolver como un arreglo de diccionarios, en los que 
-cada elemento es un registro de la tabla, con las claves de nombre, matrícula, materia,
-hora de ingreso, etc. 
-"""
-
-datos_prueba = [
-    {
-        
-    }
-]
-
-
-@vistas.route('/ver-asistencias')
+# La plantilla se renderiza en la ruta raíz 
+@vistas.route('/')
 def mostrar_asistencias():
     """
-    Renderiza un HTML que muestra las tablas de materias
-    y las asistencias de los alumnos
+    Renderiza un HTML que muestra una tabla con 
+    las asistencias de los alumnos a las materias
     """
+
+    registros = recuperar_registros()
+    return render_template('tabla.html', asistencias=registros)
