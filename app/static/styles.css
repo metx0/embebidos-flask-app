@@ -59,7 +59,7 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #e7f9e8;
     cursor: pointer;
 }
 

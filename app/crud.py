@@ -71,7 +71,7 @@ def recuperar_registros() -> list:
                         if nombre_columna == "fecha":
                             fecha_obj = fila[indice]
                             dicc[nombre_columna] = fecha_obj.strftime(
-                                "%Y-%m-%d %H:%M:%S"
+                                "%H:%M %d-%m-%Y"
                             )
                         else:
                             dicc[nombre_columna] = fila[indice]
